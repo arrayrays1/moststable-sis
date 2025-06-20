@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Manage Students')">
+</head>
+<body>
+    <nav th:replace="fragments/layout :: navbar(${user})"></nav>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div th:replace="fragments/layout :: admin-sidebar"></div>
+            
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2" style="color: #024791;"><i class="bi bi-people me-2"></i>Manage Students</h1>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createStudentModal">
+                        <i class="bi bi-plus-circle me-2"></i>Create Student
+                    </button>
+                </div>
+                
+                <!-- Success/Error Messages -->
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+                <!-- Show created student credentials -->
+                <div th:if="${newStudent}" class="alert alert-info alert-dismissible fade show" role="alert">
+                    <h5>Student Created Successfully!</h5>
+                    <p><strong>Name:</strong> <span th:text="${newStudent.name}"></span></p>
+                    <p><strong>Student ID:</strong> <span th:text="${newStudent.studentId}"></span></p>
+                    <p><strong>Email:</strong> <span th:text="${newStudent.email}"></span></p>
+                    <p><strong>Generated Password:</strong> <span th:text="${newStudent.generatedPassword}"></span></p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Student ID</th>
+                                <th>Course</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="student : ${students}">
+                                <td th:text="${student.id}">1</td>
+                                <td th:text="${student.name}">John Doe</td>
+                                <td th:text="${student.email}">john@studentdbcu.com</td>
+                                <td th:text="${student.studentId}">2023-0001</td>
+                                <td th:text="${student.courseName}">Information Technology</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary edit-student-btn" th:data-id="${student.id}">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger delete-student-btn" th:data-id="${student.id}" th:data-name="${student.name}">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${students.empty}">
+                                <td colspan="6" class="text-center">No students found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Create Student Modal -->
+                <div class="modal fade" id="createStudentModal" tabindex="-1" aria-labelledby="createStudentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createStudentModalLabel">Create Student</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form th:action="@{/admin/students/create}" method="post" id="createStudentForm">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Name</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="studentId" class="form-label">Student ID</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="studentId" name="studentId" required="">
+                                            <button type="button" class="btn btn-outline-secondary" id="generateStudentIdBtn">Generate</button>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="courseId" class="form-label">Course</label>
+                                        <select class="form-select" id="courseId" name="courseId" required>
+                                            <option value="">Select Course</option>
+                                            <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.name}">Course</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="emailPrefix" name="emailPrefix" placeholder="Auto-generated from name">
+                                            <span class="input-group-text">@studentdbcu.com</span>
+                                            <input type="hidden" id="email" name="email">
+                                            <button type="button" class="btn btn-outline-secondary" id="generateEmailBtn">Auto-Generate</button>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                            <button type="button" class="btn btn-outline-secondary" id="generatePasswordBtn">Generate</button>
+                                            <button type="button" class="btn btn-outline-secondary" id="togglePasswordBtn">
+                                                <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Create Student</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Student Modal -->
+                <div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editStudentModalLabel">Edit Student</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="editStudentForm" method="post">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="editName" class="form-label">Name</label>
+                                        <input type="text" class="form-control" id="editName" name="name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editStudentId" class="form-label">Student ID</label>
+                                        <input type="text" class="form-control" id="editStudentId" name="studentId" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editCourseId" class="form-label">Course</label>
+                                        <select class="form-select" id="editCourseId" name="courseId" required>
+                                            <option value="">Select Course</option>
+                                            <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.name}">Course</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editEmail" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editPassword" class="form-label">New Password (Optional)</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="editPassword" name="password" placeholder="Leave empty to keep current password">
+                                            <button type="button" class="btn btn-outline-secondary" id="generateEditPasswordBtn">Generate</button>
+                                            <button type="button" class="btn btn-outline-secondary" id="toggleEditPasswordBtn">
+                                                <i class="bi bi-eye" id="toggleEditPasswordIcon"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" id="saveStudentChangesBtn">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteStudentModal" tabindex="-1" aria-labelledby="deleteStudentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteStudentModalLabel">Confirm Delete</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete student <span id="deleteStudentName"></span>? This action will hide the student from the list but preserve the data in the database.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form id="deleteStudentForm" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <div th:replace="fragments/layout :: scripts"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate Student ID function
+            function generateStudentId() {
+                const currentYear = new Date().getFullYear();
+                const existingStudents = document.querySelectorAll('tbody tr');
+                let maxNumber = 0;
+                
+                // Find the highest existing student number for current year
+                existingStudents.forEach(row => {
+                    if (row.cells.length > 3) {
+                        const studentIdCell = row.cells[3];
+                        if (studentIdCell) {
+                            const studentId = studentIdCell.textContent.trim();
+                            if (studentId.startsWith(currentYear + '-')) {
+                                const numberPart = studentId.split('-')[1];
+                                if (numberPart && !isNaN(numberPart)) {
+                                    const number = parseInt(numberPart);
+                                    if (number > maxNumber) {
+                                        maxNumber = number;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                const newNumber = maxNumber + 1;
+                return currentYear + '-' + String(newNumber).padStart(4, '0');
+            }
+            
+            // Auto-generate email from name and student ID
+            function generateEmailFromName() {
+                const name = document.getElementById('name').value.trim();
+                const studentId = document.getElementById('studentId').value.trim();
+                
+                if (name && studentId) {
+                    const namePart = name.toLowerCase().replace(/\s+/g, '.');
+                    const emailPrefix = namePart + '.' + studentId;
+                    document.getElementById('emailPrefix').value = emailPrefix;
+                }
+            }
+            
+            // Generate random password
+            function generateRandomPassword() {
+                const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+                let password = '';
+                for (let i = 0; i < 12; i++) {
+                    const randomIndex = Math.floor(Math.random() * charset.length);
+                    password += charset[randomIndex];
+                }
+                return password;
+            }
+            
+            // Initialize create modal
+            document.getElementById('createStudentModal').addEventListener('show.bs.modal', function () {
+                // Reset form
+                document.getElementById('createStudentForm').reset();
+                document.getElementById('emailPrefix').value = '';
+                document.getElementById('email').value = '';
+                
+                // Auto-generate student ID when modal opens
+                document.getElementById('studentId').value = generateStudentId();
+            });
+            
+            // Event listeners for create form
+            document.getElementById('generateStudentIdBtn').addEventListener('click', function() {
+                document.getElementById('studentId').value = generateStudentId();
+            });
+            
+            document.getElementById('generateEmailBtn').addEventListener('click', generateEmailFromName);
+            
+            // Auto-generate email when name changes
+            document.getElementById('name').addEventListener('input', function() {
+                if (this.value.trim()) {
+                    setTimeout(generateEmailFromName, 300); // Debounce
+                }
+            });
+            
+            document.getElementById('generatePasswordBtn').addEventListener('click', function() {
+                document.getElementById('password').value = generateRandomPassword();
+            });
+            
+            document.getElementById('generateEditPasswordBtn').addEventListener('click', function() {
+                document.getElementById('editPassword').value = generateRandomPassword();
+            });
+            
+            // Password visibility toggles
+            document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+                const passwordInput = document.getElementById('password');
+                const toggleIcon = document.getElementById('togglePasswordIcon');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.className = 'bi bi-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.className = 'bi bi-eye';
+                }
+            });
+            
+            document.getElementById('toggleEditPasswordBtn').addEventListener('click', function() {
+                const passwordInput = document.getElementById('editPassword');
+                const toggleIcon = document.getElementById('toggleEditPasswordIcon');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.className = 'bi bi-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.className = 'bi bi-eye';
+                }
+            });
+            
+            // Form submission handler
+            document.getElementById('createStudentForm').addEventListener('submit', function(e) {
+                const emailPrefix = document.getElementById('emailPrefix').value.trim();
+                if (emailPrefix) {
+                    document.getElementById('email').value = emailPrefix + '@studentdbcu.com';
+                } else {
+                    e.preventDefault();
+                    alert('Please generate or enter an email prefix');
+                    return false;
+                }
+            });
+            
+            // Edit student functionality
+            document.querySelectorAll('.edit-student-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    
+                    // Show loading state
+                    const modal = new bootstrap.Modal(document.getElementById('editStudentModal'));
+                    
+                    fetch(`/admin/students/${studentId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(student => {
+                            // Populate the form with proper null checks
+                            document.getElementById('editName').value = student.name || '';
+                            document.getElementById('editStudentId').value = student.studentId || '';
+                            document.getElementById('editCourseId').value = student.courseId || '';
+                            document.getElementById('editEmail').value = student.email || '';
+                            document.getElementById('editPassword').value = ''; // Always clear password field
+                            
+                            document.getElementById('editStudentForm').action = `/admin/students/${studentId}/update`;
+                            
+                            modal.show();
+                        })
+                        .catch(error => {
+                            console.error('Error fetching student data:', error);
+                            alert('Error loading student data. Please try again.');
+                        });
+                });
+            });
+            
+            // Delete student functionality using modal
+            document.querySelectorAll('.delete-student-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    const studentName = this.getAttribute('data-name');
+                    
+                    document.getElementById('deleteStudentName').textContent = studentName;
+                    document.getElementById('deleteStudentForm').action = `/admin/students/${studentId}/delete`;
+                    
+                    new bootstrap.Modal(document.getElementById('deleteStudentModal')).show();
+                });
+            });
+            
+            // Sort table by name
+            const table = document.querySelector('.table tbody');
+            if (table) {
+                const rows = Array.from(table.querySelectorAll('tr')).filter(row => !row.querySelector('td[colspan]'));
+                
+                rows.sort((a, b) => {
+                    if (a.children.length > 1 && b.children.length > 1) {
+                        const nameA = a.children[1].textContent.trim().toLowerCase();
+                        const nameB = b.children[1].textContent.trim().toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    }
+                    return 0;
+                });
+                
+                rows.forEach(row => table.appendChild(row));
+            }
+        });
+    </script>
+</body>
+</html>
+

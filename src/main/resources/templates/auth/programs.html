@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link th:href="@{/css/about.css}" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/logo.png}">
+</head>
+<body>
+    <nav class="navbar">
+      <div class="navbar-logo">
+        <a th:href="@{/auth/login}"><img th:src="@{/img/logo.png}" alt="Delmarva Beach City University Logo" /></a>
+        <div class="navbar-title">
+          <h1>DELMARVA BEACH CITY</h1>
+          <h2>UNIVERSITY (DBCU)</h2>
+        </div>
+      </div>
+
+     <div class="navbar-links">
+        <a th:href=@{/auth/about}><b>ABOUT</b></a>
+        <a th:href=@{/auth/programs}><b>PROGRAMS</b></a>
+        <a th:href=@{/auth/admissions}><b>ADMISSIONS</b></a>
+        <a th:href=@{/auth/campuslife}><b>CAMPUS LIFE</b></a>
+        
+      </div>
+    </nav>
+
+      <div class="info">
+      <h1>DBCU PROGRAMS</h1>
+      <p>
+        At Delmarva Beach City University (DBCU), we provide several programs committed to shaping the future of learners through academic excellence, spiritual growth, and holistic development. Those programs are as follows:
+      </p>
+
+      <h1>INFORMATION TECHNOLOGY</h1>
+      <ul>
+        <li>BS in Information Technology (BSIT)</li>
+        <li>BS in Information Science (BSCS)</li>
+        <li>BS in Information Systems (BSIS)</li>
+      </ul>
+
+      <h1>BUSINESS & MANAGEMENT</h1>
+      <ul>
+        <li>BS in Information Technology (BSIT)</li>
+        <li>BS in Information Science (BSCS)</li>
+        <li>BS in Information Systems (BSIS)</li>
+      </ul>
+
+      <h1>TOURISM MANAGEMENT</h1>
+      <ul>
+        <li>BS in Tourism Management (BSTM)</li>
+      </ul>
+
+      <h1>ENGINEERING</h1>
+      <ul>
+        <li>BS in Computer Engineering (BSCpE)</li>
+      </ul>
+
+      <h1>ARTS & SCIENCES</h1>
+      <ul>
+        <li>BA in Communication (BACOMM)</li>
+        <li>Bachelor of Multimedia Arts (BMMA)</li>
+        <li>Bachelor of Arts in Psychology</li>
+      </ul>
+
+      <h1>MARITIME</h1>
+      <ul>
+        <li>BS in Marine Transportation (BSMT)</li>
+        <li>BS in Marine Engineering (BSMarE)</li>
+        <li>BS in in Naval Architecture and Marine Engineering (BSNAME)</li>
+      </ul>
+
+      <h1>CRIMINAL JUSTICE EDUCATION</h1>
+      <ul>
+        <li>BS in Criminology</li>
+      </ul>
+    </div>
+
+</body>
+</html>
